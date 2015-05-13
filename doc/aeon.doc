@@ -1,0 +1,112 @@
+/* fixme: diferencas entre o compilador c++ e python [indice -1]
+Aeon is a Turing-complete more-flexible [[esoteric programming language|esoteric language]] designed by [[User:Cptx032]] in april of 2014. Its based in FALSE and brainfuck languages.
+
+==Overview==
+Aeon works with two lists: one for string values and other for function values [written in the same language of compiler]. The functions available are fixed. You can't write, in a script, another function. The default compiler has 5 basic functions[that can increase if you embed the interpreter in your application]:
+<ul>
+	<li>0: '''print''': prints the current value</li>
+	<li>1: '''println''': prints the current value and puts \n char in the end of line</li>
+	<li>2: '''input''': gets terminal entry and saves that value in the current position</li>
+	<li>3: '''run''': interprets the current value like a aeon script.</li>
+	<li>4: '''read''': read the content of file path in current value and saves your value in the same position</li>
+</ul>
+The only chars available are ., +, -, %, v, ^, >, <, {, =, |, [, ], ( and #. Any other chars are ignored.
+
+==Functions==
+You should use those chars to move in the function list:
+<ul>
+	<li>'''v''': moves down in the list</li>
+	<li>'''^''': moves up in the list</li>
+</ul>
+Its like an vertical list.
+To run the current function use '.' char.
+
+==Variables==
+The variables are in a horizontal list:
+<ul>
+	<li> '''>''': moves right in the list</li>
+	<li> '''<''': moves left in the list</li>
+</ul>
+Others commands:
+<ul>
+	<li>'''+''': tries add +1</li>
+	<li>'''-''': tries add -1</li>
+	<li>'''%''': saves the rest of line in current position</li>
+</ul>
+
+==Flow control==
+Aeon has an if-greater-than, an if-less-than, an if-equal-to, an if-different-of and a while loop flow controls. The 'if' flow control starts with the '{' char. To test if the value of current position is greater than the last value, you can type: '{]'. To test if the value of current position is less than last value, you can type: '{['. If you want know if the current value is equal to last value, you can type '{=', and different '{|'. If the operation returns true the rest of line is interpreted, if not, the line is broken. The while loop works in the same way: if the current value is different of '0' then the rest of line is interpreted.
+
+==Error handling==
+Commands like +, -, {[, {[ can throw errors if the current value can't be casted to float or integer. Aeon hasn't any kind of error handling [although you can do that if you embed the language]. So, be careful.
+
+==Embedding the language==
+Work in progress
+
+==Examples==
+===Hello World===
+<pre>
+%Hello World
+.
+</pre>
+
+===Simple name program===
+<pre>
+# 0 : print
+# 1 : println
+# 2 : input
+
+%Enter your name:
+v.v.>%Welcome, 
+^.<^.%Press [ENTER] to continue...
+v.v.
+</pre>
+
+===Simple age program===
+<pre>
+%In Brazil, you can only drive if you have more than 16 years.
+.
+%Enter your age:
+>%You can drive
+>%You can't drive
+v<<.>>>v.^^>%16
+{[<<<.>>>
+{]<<.>>
+{=<<<.>>>
+</pre>
+
+==List of commands==
+{| class="wikitable"
+|-
+! Char !! Description
+|-
+| '''.''' || Runs the current function [vertical list]
+|-
+| '''+''' || Tries add +1 to the current value [in the horizontal list]
+|-
+| '''-''' || Tries add -1 to the current value [in the horizontal list]
+|-
+| '''%''' || Saves the rest of line to current position [in the horizontal list]
+|-
+| '''v''' || Moves down [in the vertical list]
+|-
+| '''^''' || Moves up [in the vertical list]
+|-
+| '''>''' || Moves right [in the horizontal list]
+|-
+| '''<''' || Moves left [in the horizontal list]
+|-
+| '''{''' || Starts an 'if-statement'
+|-
+| '''=''' || Before '{' means 'if-equal'. The rest of line will be runned if current value is equal to last value. If the last char is not '{' it is ignored.
+|-
+| '''|''' || Before '{' means 'if-different-of'. The rest of line will be runned if current value is different of last value. If the last char is not '{' it is ignored.
+|-
+| '''[''' || Before '{' means 'if-less-than'. The rest of line will be runned if current value is less than last value. If the last char is not '{' it is ignored.
+|-
+| ''']''' || Before '{' means 'if-greater-than'. The rest of line will be runned if current value is greater than last value. If the last char is not '{' it is ignored.
+|-
+| '''(''' || While the current value is different of '0' the rest of line is runned
+|-
+| '''#''' || The interpretation is interrupted. So, it works like commentary. After this char you can type any others char [including >, < etc.]
+|}

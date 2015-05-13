@@ -1,0 +1,236 @@
+<html>
+	<head>
+		<title>Aeon - Linguagem de Programacao esoterica</title>
+	</head>
+	<body>
+		<h1>Aeon</h1>
+		<hr/>
+		Aeon &eacute; uma linguagem de programacao esot&eacute;rica baseada em brainfuck e FALSE. Embora seja esot&eacute;rica, ela foi construida para "facilitar" algumas tarefas que parecem simplesmente "demoniacas" como um simples "if-greater-than" se feitas em brainfuck.
+		<h2>Listas</h2><hr/>
+		Ela funciona com uma malha bidimensional de dados. A lista vertical armazena fun&ccedil;&otilde;es escritas na mesma linguagem em que foi escrito o interpretador [existem dois interpretadores disponiveis: um escrito em C++ e outro em Python, embora o Swig ou a Python C API possa reduzir o primeiro ao segundo]. E a lista horizontal armazena dados, como em brainfuck. <br/> Em brainfuck &eacute; possivel ir "caminhando" para a direita ou esquerda utilizando um ponteiro [com os caracteres "<" e ">"]. Em <strong>aeon</strong>, alem disso, &eacute; possivel "caminhar" para cima ou para baixo alternando entre as fun&ccedil;&otilde;es da lista usando os caracteres "^" e "v".
+		<h2>Tipo de Dados</h2><hr/>
+		O <strong>aeon</strong> s&oacute; armazena strings. As fun&ccedil;&otilde;es escritas na linguagem do interpretador podem tentar converter as strings em n&uacute;meros ou em outros dados, mas os valores s&atilde;o todos armazenados como strings. Mais abaixo voc&ecirc; ver&aacute; algumas opera&ccedil;&otilde;es que convertem strings em n&uacute;meros.<br/>
+		Faz-se necessario, ent&atilde;o, uma forma mais f&aacute;cil de armazenar strings que ficar olhando a tabela ASCII. Em <strong>aeon</strong> o caractere "%" informa ao interpretador que o resto da linha deve ser lido n&atilde;o como instru&ccedil;&otilde;es, mas como string. Por exemplo:
+		
+		<pre>
+		<span style="color:darkgreen;"># armazena todos os caracteres posteriores a "%" na posi&ccedil;&atilde;o 0</span>
+		<span style="font-weight:bold;">%</span><span style="color:darkred;">Hello World</span>
+		<span style="color:darkgreen;"># passa para o pr&oacute;ximo elemento e armazena o caractere ">"</span>
+		<span style="font-weight:bold;">>%</span><span style="color:darkred;">></span>
+		</pre>
+		Mesmo o caractere "#" [de coment&aacute;rio] &eacute; ignorado e transformado em string se vier depois de "%". &Eacute; importante saber disso, pois tanto o caractere "%" quanto "#" anulam um ao outro e todo o resto da linha.
+		<h3>Valores</h3></hr>
+		Os valores [strings] da lista [horizontal], como j&aacute; dito, podem ser armazenados com o caractere "%". Al&eacute;m disso &eacute; poss&iacute;vel <strong>tentar</strong> incrementar o valor atual da lista com o caractere "+" ou "-". Se o valor atual n&atilde;o puder ser convertido em n&uacute;mero o programa interrompe a interpreta&ccedil;&atilde;o do script. Por exemplo:
+		<pre>
+		<span style="font-weight:bold">%</span><span style="color:darkred;">18</span>
+		<span style="font-weight:bold">++++--+</span> <span style="color:darkgreen"># valor atual: "21" em forma de string</span>
+		</pre>
+		<h3>Fun&ccedil;&otilde;es</h3><hr/>
+		Existem 5 fun&ccedil;&otilde;es padr&atilde;o: println, print, get_input, run e read. Elas est&atilde;o dispostas na lista vertical exatamente nessa ordem. Para executar as fun&ccedil;&otilde;es usa-se o caractere ".".
+		<ul>
+			<li><strong>println</strong>: imprime o valor da c&eacute;lula atual seguido de um caractere de nova linha</li>
+			<li><strong>print</strong>: Imprime o valor da c&eacute;lula atual</li>
+			<li><strong>get_input</strong>: pega a entrada do terminal e armazena na c&eacute;lula atual</li>
+			<li><strong>run</strong>: &eacute; uma fun&ccedil;&atilde;o introspectiva. Ele tenta interpretar o conte&uacute;do da c&eacute;lula atual.</li>
+			<li><strong>read</strong>: l&ecirc; o conte&uacute;do do arquivo cujo caminho est&aacute; na c&eacute;lula atual e armazena na linha seguinte</li>
+		</ul>
+		Exemplo:
+		<pre>
+		<span style="font-weight:bold">%</span><span style="color:darkred">Digite seu nome:</span> 
+		<span style="font-weight:bold">v.v.>%</span><span style="color:darkred;">Bem vindo,</span> 
+		<span style="font-weight:bold">^.<.</span>
+		</pre>
+		<h4>Embedding</h4><hr/>
+		<h5>Porque embutir?</h5>
+		N&atilde;o sei.
+		<h5>C++</h5>
+		&Eacute; poss&iacute;vel embutir o interpretador do <strong>aeon</strong> em seu programa escrito em c++. O aeon n&atilde;o tem arquivo de cabe&ccedil;alho [s&oacute; tem o .cpp], por isso basta que voc&ecirc; o inclua nos includes e ele ser&aacute; compilado junto [sem nenhum acr&eacute;scimo na linha de comando para compila&ccedil;&atilde;o]. <br/>Exemplo de uma linha de comando:
+		<pre>
+		<span style="color: darkgreen">#include</span> <span style="color: darkred;">"aeon.cpp"</span>
+	
+		<span style="color: blue;">void</span> show_intro()
+		{
+			<span style="font-weight: bold;">std</span>::cout << "Aeon 1.0.0 (Apr 11 2014)" << <span style="font-weight: bold;">std</span>::endl;
+			<span style="font-weight: bold;">std</span>::cout << "Type Ctrl+C to quit." << <span style="font-weight: bold;">std</span>::endl;
+		}
+		
+		<span style="color: blue;">int</span> main(<span style="color: blue;">int</span> argc, <span style="color: blue;">char</span> <span style="color: blue;font-weight:bold;">const</span> *argv[])
+		{
+			AeonInterpreter*i = <span style="color: blue;">new</span> AeonInterpreter();
+			
+			AeonFunction pln(<span style="color: darkred;">"println"</span>, println);
+			AeonFunction p(<span style="color: darkred;">"print"</span>, print);
+			AeonFunction gi(<span style="color: darkred;">"input"</span>, get_input);
+			AeonFunction r(<span style="color: darkred;">"run"</span>, run);
+			
+			i->function_list.push_back(pln);
+			i->function_list.push_back(p);
+			i->function_list.push_back(gi);
+			i->function_list.push_back(r);
+			
+			show_intro();
+			<span style="color: blue;">while</span>(<span style="color: blue;">true</span>)
+			{
+				<span style="font-weight: bold;">std</span>::cout << <span style="color: darkred;">": "</span>;
+				<span style="font-weight: bold;">std</span>::string line;
+				<span style="font-weight: bold;">std</span>::cin >> line;
+				<span style="font-weight: bold;">std</span>::vector<<span style="font-weight: bold;">std</span>::string> v;
+				v.push_back(line);
+				i->run(v);
+			}
+			<span style="color: blue;">return</span> 0;
+		}
+
+		</pre>
+		Existe uma classe chamada <strong>AeonInterpreter</strong> que possui um vetor de strings chamado <strong>var_list</strong> e um vetor de inst&acirc;ncias de <strong>AeonFunction</strong> que armazenam as fun&ccedil;&otilde;es. A classe <strong>AeonFunction</strong> possui dois campos: <strong>name</strong> e <strong>pointer</strong>. O primeiro sendo uma simples descri&ccedil;&atilde;o da fun&ccedil;&atilde;o e o segundo um ponteiro para a fun&ccedil;&atilde;o escrita em c++ com a seguinte assinatura:
+		<pre>
+		<span style="color: darkred;">// esse typedef j&aacute; est&aacute; incluso no arquivo aeon.cpp</span>
+		<span style="color: blue;">typedef void</span>(*<strong>Function</strong>)();
+		</pre>
+		Nesse sentido voc&ecirc; pode utilizar os campos <strong>AeonInterpreter.var_index</strong> e <strong>AeonInterpreter.function_index</strong> e a fun&ccedil;&atilde;o <strong>AeonInterpreter::get_default</strong> para escrever suas pr&oacute;prias fun&ccedil;&otilde;es. Veja a implementa&ccedil;&atilde;o da fun&ccedil;&atilde;o <strong>print</strong>:
+		<pre>
+		<span style="color: blue;">void</span> print()
+		{
+			<span style="font-weight: bold;">std</span>::cout << <strong>AeonInterpreter</strong>::get_default()->var_list[<strong>AeonInterpreter</strong>::get_default()->var_index];
+		}
+		</pre>
+		<h5>Python</h5>
+		<pre>Work in progress...</pre>
+		
+		<h2>Controle de Fluxo</h2><hr/>
+		O <strong>aeon</strong> possui dois controles de fluxo b&aacute;sicos: while e if.
+		<h3>IF</h3>
+		O if pode ser feito como caractere "{". Depois dele &eacute; necess&aacute;rio que venha os caracteres: "=","|","]","[":
+		<ul>
+			<li><strong>{=</strong>: testa se o valor atual &eacute; igual ao valor da c&eacute;lula anterior. Se for, o resto da linha &eacute; executado, sen&atilde;o pula para a pr&oacute;xima linha.
+			<li><strong>{|</strong>: testa se o valor da c&eacute;lula atual &eacute; diferente do valor da c&eacute;lula anterior. Se for, o resto da linha &eacute; executado, sen&atilde;o pula para a pr&oacute;xima linha.
+			<li><strong>{[</strong>: testa se o valor atual &eacute; menor que valor da c&eacute;lula anterior. Se for, o resto da linha &eacute; executado, sen&atilde;o pula para a proxima linha. Cuidado: o interpretador vai tentar converter o valor da c&eacute;lula atual e da anterior para n&uacute;meros [double].
+			<li><strong>{]</strong>: testa se o valor atual &eacute; maior que valor da c&eacute;lula anterior. Se for, o resto da linha &eacute; executado, sen&atilde;o pula para a proxima linha. Cuidado: o interpretador vai tentar converter o valor da c&eacute;lula atual e da anterior para n&uacute;meros [double].
+			</li>
+		</ul>
+		Caso, depois de "{" n&atilde;o vier nenhum dos 4 caractere anteriores a interpreta&ccedil;&atilde;o &eacute; interrompida [veja a se&ccedil;&atilde;o <a href="#error-handling"><strong>Error Handling > SyntaxError</strong></a>].
+		<br/>Exemplo:
+		<pre>
+		<span style="font-weight:bold">%</span><span style="color:darkred">Digite um numero:</span> 
+		<span style="font-weight:bold">v.v.>%</span><span style="color:darkred">18</span>
+		<span style="font-weight:bold">{=%</span><span style="color:darkred">Igual a 18</span>
+		<span style="font-weight:bold">.</span>
+		</pre>
+		O script anterior imprime "Igual a 18" se o n&uacute;mero entrado for 18, sen&atilde;o imprime simplesmente o n&uacute;mero.
+		<h3>WHILE-LOOP</h3>
+		O loop while &eacute; feito usando o caractere "(". Toda a linha posterior a esse caractere ser&aacute; executada enquanto o valor da c&eacute;lula atual for <strong>diferente</strong> de "0".
+		<br/>Exemplo [for 9..0]:
+		<pre>
+		<span style="font-weight:bold">%</span><span style="color:darkred">10</span>
+		<span style="font-weight:bold">(-.</span>
+		</pre>
+		
+		<h2>Fun&ccedil;&otilde;es run e read</h2><hr/>
+		Essas fun&ccedil;&otilde;es foram feitas para tentar simular a cria&ccedil;&atilde;o de fun&ccedil;&otilde;es n&atilde;o escritas na linguagem do interpretador. Com elas &eacute; poss&iacute;vel escrever um script num arquivo e "pedir" sua interpreta&ccedil;&atilde;o em tempo de execu&ccedil;&atilde;o.<br/>Imagine um arquivo "clean.ae":
+		<pre>
+		<span style="font-weight:bold">%</span><span style="color:darkred">0</span>
+		</pre>
+		E um arquivo que usa essa "fun&ccedil;&atilde;o":
+		<pre>
+		<span style="font-weight:bold">%</span><span style="color:darkred">./clean.ae</span>
+		<span style="font-weight:bold">vvvv.^.</span><span style="color:darkred"># executa o arquivo</span>
+		</pre>
+		<h2>Notas importantes:</h2></hr>Considere o seguinte script:
+		<pre>
+		<span style="font-weight:bold">%</span><span style="color:darkred">Voc&ecirc; s&oacute; pode votar se tiver mais de 16 anos.</span>
+		.
+		<span style="font-weight:bold">%</span><span style="color:darkred">Digite sua idade: </span>
+		<span style="font-weight:bold">>%</span><span style="color:darkred">Voc&ecirc; pode votar</span>
+		<span style="font-weight:bold">>%</span><span style="color:darkred">Voc&ecirc; nao pode votar</span>
+		<span style="font-weight:bold">v<<.>>>v.^^>%</span><span style="color:darkred">16</span>
+		<span style="font-weight:bold">{[<<<.
+		{]<<.
+		{=<<<.</span>
+		</pre>
+		O script parece correto, mas &eacute; preciso ter cuidado com os controles de fluxo. Observe a linha 7:
+		<pre>
+		<span style="font-weight:bold">{[<<<.</span>
+		</pre>
+		Ela pergunta: "16 &eacute; menor que o valor digitado?". Se for, volta 3 c&eacute;lulas [onde esta armazenada a mensagem "Voc&ecirc; pode votar"] e imprime a mensagem. Supondo que o usu&aacute;rio digitasse o valor "18" a linha 7 seria executada. Mas, depois da linha 7, que foi executada, o programa n&atilde;o encerra, ele continua na linha seguinte, que &eacute;:
+		<pre>
+		<span style="font-weight:bold">{]<<.</span>
+		</pre>
+		Depois da sa&iacute;da da linha 7 a c&eacute;lula atual n&atilde;o &eacute; mais onde est&aacute; o valor "16" mas onde est&aacute; a mensagem "Voc&ecirc; pode votar". Isso significa que o interpretador vai tentar converter para inteiro a mensagem "Voc&ecirc; pode votar". Isso certamente ocorrer&aacute; num erro.</br>Para solucionar o problema &eacute; preciso garantir que depois da sa&iacute;da de um bloco desse o estado em que ele sai seja igual ao estado em que ele estava antes de entrar:
+		<pre>
+		<span style="font-weight:bold">%</span><span style="color:darkred;">Voc&ecirc; s&oacute; pode votar se tiver mais de 16 anos.</span>
+		<span style="font-weight:bold">.</span>
+		<span style="font-weight:bold">%</span><span style="color:darkred">Digite sua idade: </span>
+		<span style="font-weight:bold">>%</span><span style="color:darkred;">Voc&ecirc; pode votar</span>
+		<span style="font-weight:bold">>%</span><span style="color:darkred;">Voc&ecirc; n&atilde;o pode votar</span>
+		<span style="font-weight:bold">v<<.>>>v.^^>%</span>16
+		<span style="font-weight:bold">{[<<<.>>>
+		{]<<.>>
+		{=<<<.>>></span>
+		</pre>
+		Veja que a linha 7 agora volta a posi&ccedil;&atilde;o anterior:
+		<pre>
+		<span style="font-weight:bold">{[<<<.>>></span>
+		</pre>
+		<h2 id="error-handling">Error Handling</h2><hr/>
+		Em <strong>aeon</strong> s&oacute; &eacute; poss&iacute;vel ocorrer dois erros:
+		<ul>
+			<li><strong>SyntaxError</strong>: Ocorre somente quando, depois de "{" n&atilde;o vier um caractere esperado [ "[","]","=","|" ]</li>
+			<li><strong>CastError</strong>: Ocorre quando uma opera&ccedil;&atilde;o que converte a c&eacute;lula em n&uacute;mero falha. Pode ocorrer em "+", "-", "{]", "{[" </li>
+		</ul>
+		Exemplo:
+		<pre>
+		<span style="font-weight:bold">%</span><span style="color:darkred;">a</span>
+		<span style="font-weight:bold">>%</span><span style="color:darkred;">b</span>
+		<span style="font-weight:bold">+{[.
+		{.</span>
+		</pre>
+		A linha 3 vai dar <strong>CastError</strong> por tentar adicionar 1 em "b". A opera&ccedil;&atilde;o "{[" tamb&eacute;m ocasionaria um erro. A linha 4 d&aacute; <strong>SyntaxError</strong>.<br/>O interpretador interrompe a execu&ccedil;&atilde;o de todo o script se ocorrer um erro. Caso voc&ecirc; tenha imbutido o interpretador na sua aplica&ccedil;&atilde;o, ser&aacute; necess&aacute;rio verificar erro por erro analisando o c&oacute;digo de retorno de <strong>run</strong>:
+		<pre>
+		<span style="font-weight: bold;">std</span>::string script = <span style="color: orange;">"+++---->><><>+++"</span>; <span style="color: darkred;">/* exemplo */</span>
+		<span style="font-weight: bold;">std</span>::vector<<span style="font-weight: bold;">std</span>::string> linhas;
+		linhas.push_back(script);
+		AeonInterpreter *i = <span style="color: blue;">new</span> AeonInterpreter();
+		<span style="font-weight: bold;">AeonError</span>::AeonError status = i->run(linhas);
+		<span style="color: blue;">switch</span>(status)
+		{
+			<span style="color:blue;">case</span> <span style="font-weight:bold;">AeonError</span>::CAST_ERROR:
+			{
+				// do something
+				<span style="color: blue;">break</span>;
+			}
+			<span style="color: blue;">case</span> <span style="font-weight: bold;">AeonError</span>::SYNTAX_ERROR:
+			{
+				// do something
+				<span style="color: blue;">break</span>;
+			}
+		}
+		</pre>
+		<h2 id="compile">Compilando</h2><hr/>
+		Para compilar o interpretador voc&ecirc; precisa:
+		<ul>
+			<li>Baixar o fonte <a href="/aeon.tar">aqui</a>.</li>
+			<li>Executar o comando:
+				<pre>
+				g++ interpreter.cpp -O3 -o aeon
+				</pre>
+			</li>
+			<li>Usar o interpretador:
+			<pre>
+			./aeon
+			</pre>
+			</li>
+			<li>Ou interpretar um arquivo:
+			<pre>
+			./aeon file_name.ae
+			</pre>
+			</li>
+		</ul>
+		<h2 id="contact">Contato</h2><hr/>
+		Enviar sugest&otilde;es para:
+		<pre>
+		cptx032 arroba gmail ponto com
+		</pre>
+		<h2 id="finalnotes">Notas finais</h2><hr/>
+		O aeon n&atilde;o possui nenhum interesse comercial. Ele foi [e est&aacute; sendo] desenvolvido por pura divers&atilde;o.</br>Tenho plena convic&ccedil;&atilde;o que o c&oacute;digo atual n&atilde;o &eacute; o mais eficiente, dada a minha falta de conhecimento profundo de c++, por isso qualquer sugest&atilde;o, tanto a n&iacute;vel de filosofia quanto a n&iacute;vel de c&oacute;digo mesmo, &eacute; bem vinda.
+	</body>
+</html>
